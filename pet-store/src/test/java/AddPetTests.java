@@ -1,3 +1,4 @@
+import io.restassured.response.Response;
 import models.Category;
 import models.Pet;
 import models.Tag;
@@ -10,8 +11,9 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.*;
 
 public class AddPetTests {
+
     @Test
-    public void Users_CreateUsers_Success() {
+    public void addNewPetSuccessfully() {
 
         Category category = new Category(123L, "Domestic");
 
@@ -25,21 +27,24 @@ public class AddPetTests {
                 Arrays.asList(tag),
                 "available");
 
-        PetStoreService.addPet(pet)
+        Response addPetResponse = PetStoreService.addPet(pet);
+
+        addPetResponse
                 .then()
-                .assertThat()
                 .statusCode(SC_OK)
                 .log()
                 .body()
                 .body("id", equalTo(pet.getId().intValue()))
                 .body("name", equalToCompressingWhiteSpace(pet.getName()))
                 .body("status", equalToCompressingWhiteSpace(pet.getStatus()))
-                .body("category.id",equalTo(pet.getCategory().getId().intValue()))
-                .body("category.name",equalTo(pet.getCategory().getName()))
-                .body("tags[0].id",equalTo(pet.getTags().get(0).getId().intValue()))
-                .body("tags[0].name",equalTo(pet.getTags().get(0).getName()))
+                .body("category.id", equalTo(pet.getCategory().getId().intValue()))
+                .body("category.name", equalTo(pet.getCategory().getName()))
+                .body("tags[0].id", equalTo(pet.getTags().get(0).getId().intValue()))
+                .body("tags[0].name", equalTo(pet.getTags().get(0).getName()))
                 .body("photoUrls[0]", containsStringIgnoringCase("cat"));
-//
-//        GoRestService.deleteUser(userId);
+
+        PetStoreService.deletePet(addPetResponse.getBody().jsonPath().getLong("id"))
+                .then()
+                .statusCode(SC_OK);
     }
 }

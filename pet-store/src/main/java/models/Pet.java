@@ -17,7 +17,7 @@ public class Pet {
         setPhotoUrls(photoUrls);
         setTags(tags);
         setStatus(status);
-    };
+    }
 
     public Category getCategory() {
         return category;
@@ -66,5 +66,4 @@ public class Pet {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
-
 }
